@@ -1,0 +1,448 @@
+{% extends 'base.html' %}
+
+{% block head %} {% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Taj's Budget App!</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/review_pages">Past Weeks</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Source Code</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+</nav>
+
+
+<div class="container-fluid" >
+    <div class=" row mt-4 p-5 bg rounded">
+        <h1 style="text-align: center;padding: 20px;">This Week's Budget Plan</h1>
+        <h4 style="text-align: center;padding: 20px;">{{start_text}} - {{end_text}}</h4>
+        
+    </div>
+    <div class="row m-b-25">
+        <div class="col-md-6 col-sm-8 mb-3">
+            <canvas id="myChart" height="100px"></canvas>
+        </div>
+        <div class="col-md-6 col-sm-10 ">
+            <div class="row " style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; align-items: center;">
+            
+                <div class=" col-md-3 col-sm-8 card mt-0 mr-1" style="box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
+                transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,
+                .3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12); background-color:#66e6ff; margin: 10px; margin-top: 5px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Bills</h5>
+                        <h6 id="bill_card" class="card-subtitle mb-2 text-muted">$</h6>
+                        
+                        <p class="card-text">Recently Added:
+                        {% for bill in bills %}
+            
+                        ${{ bill.amount }} 
+                    ({{bill.date.date()}})
+                        <br>
+            
+                        {% endfor %}
+                        </p>
+                        <button type="button" class="btn btn-outline-primary"><a href="/Add_bill">add bill</a></button>
+                        
+                    </div>
+                </div>
+                <div class=" col-md-3 col-sm-8 card mt-0 mr-1" style="box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
+                    transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,
+                    .3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);background-color:#66ffb3; margin: 10px; margin-top: 5px ">
+                    <div class="card-body">
+                    <h5 class="card-title">Deposits</h5>
+                    <h6 id="deposit_card" class="card-subtitle mb-2 text-muted">$</h6>
+                    
+                    <p class="card-text">Recently Added:
+                    {% for deposit in deposits %}
+
+                    ${{ deposit.amount }} 
+                ({{deposit.date.date()}})
+                    <br>
+
+                    {% endfor %}
+                    </p>
+                    
+                    <button type="button" class=" btn btn-outline-primary"><a href="/Add_deposit" class="card-link">add deposit</a></button>
+                    
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-8 card mt-0 mr-1" style="box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
+                transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,
+                .3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);background-color:#ffe366; margin: 10px; margin-top: 5px ">
+                    <div class="card-body">
+                    <h5 class="card-title">Savings </h5>
+                    <h6 id="savings_card" class="card-subtitle mb-2 text-muted">$ {{savings_total}}  (Total Savings)</h6>
+                    <p class="card-text">
+                        {% for deposits in savings_deposits %}
+            
+                        ${{ deposits.amount }} 
+                    ({{deposits.date.date()}})
+                        <br>
+            
+                        {% endfor %}</p>
+                        <button type="button" class="btn btn-outline-primary"><a href="/Add_savings" class="card-link">add to savings</a></button>
+                    
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </div>
+
+
+    <div class="row justify-content-center">
+        <div class="col-sm-8 col-md-4 mt-5 me-1" style="text-align: center;">
+            <h1 id="money_remaining"></h1>
+            <div  class="progress">
+                <div id="bar" class="progress-bar" role="progressbar" aria-valuenow="100"
+                aria-valuemin="0" aria-valuemax="100" style="width: 10%; background-color: yellow;">
+                86%
+                </div>
+           </div>
+           <br>
+           <!-- Button to Open the Modal -->
+        
+            
+                
+            <input type="text"  name="content" id="prepurchase">
+                
+    
+                
+    
+            <input type="submit" onclick="makeModal()" id="prepurchase_button" 
+            value="Check Price Percentage" data-bs-toggle="modal" data-bs-target="#myModal">
+            
+            <!-- The Modal -->
+            <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                <div class="modal-content">
+            
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title" id="modal_heading">Modal Heading</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+            
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                    Enter in your hourly rate to see hours of labor it costs
+                    </div>
+                    <input type="text"  name="content" id="labor_rate" style="width: 25%; align-self: center;">
+                    <button onclick="labor_exchange()" data-bs-toggle="collapse" data-bs-target="#exchange_bubble">Calculate</button>
+
+                    <div id="exchange_bubble" class="collapse">
+                    Lorem ipsum dolor text....
+                    </div>
+                    
+                </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        
+    
+    <br style="height: 60px;">
+    <div class=" col-sm-10 col-md-7" style= "padding-top: 3%;">
+        <div>
+            <h2 style="text-align: center;"> Transactions </h2>
+            <br style="height: 7px;">
+            <a href="/Add_transaction"> ADD Purchase </a> 
+            <br>
+            <table class="table table-bordered" style="background-color: #dd7ff5;">
+
+                <tr>
+                    <th> </th>
+                    <th> Amount </th>
+                    <th> Date Purchased </th>
+                    <th> Percentage </th>
+                    
+                </tr>
+                {% for transaction in transactions%}
+                <tr class= "transactions" id= "{{transaction.id}}">
+                    <td> $ </td>
+                    <td class= "p1" id="{{transaction.id}}"> {{transaction.amount}} </td>
+                    <td> {{transaction.date.date()}} </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+
+
+
+<div class="content">
+<h1> Taj's Budget App</h1>
+<table>
+        <tr>
+            <th> Periods_ID </th>
+            <th> Added </th>
+            <th> Days Through</th>
+            <th> Action </th>
+
+        </tr>
+
+        {% for period in periods%}
+        <tr>
+            <td> {{period.id}} </td>
+            <td> {{period.start_date}} </td>
+            <td> {{period.end_date}} </td>
+            <td>
+                <a href=""> DELETE </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <br>
+    <h2>Your total savings is {{savings_total}}</h2><a href="/Add_savings"> ADD MORE </a>
+    <br>
+    <h3> Income </h3>
+    <a href="/Add_deposit"> ADD Deposit </a>
+    <table>
+
+        <tr>
+            <th> Period ID </th>
+            <th> Deposit ID </th>
+            <th> Date Added </th>
+            <th> Amount </th>
+
+        </tr>
+        {% for deposit in deposits%}
+        <tr>
+            <td> {{deposit.period_id}} </td>
+            <td> {{deposit.id}} </td>
+            <td> {{deposit.date.date()}} </td>
+            <td> {{deposit.amount}} </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h3> Income total is: </h3><h3 id="deposit_total">{{deposit_total}}</h3>
+
+    <br>
+    <h1> Bills </h1>
+    <a href="/Add_bill"> ADD BILL </a>
+    <table>
+
+        <tr>
+            <th> Period ID </th>
+            <th> Bill ID </th>
+            <th> Due Date </th>
+            <th> Amount </th>
+            <th> Bill Status </th>
+
+        </tr>
+        {% for bill in bills%}
+        <tr>
+            <td> {{bill.period_id}} </td>
+            <td> {{bill.id}} </td>
+            <td> {{bill.date.date()}} </td>
+            <div><td> {{bill.amount}} </td></div>
+            <td> {{bill.status}} </td>
+        </tr>
+                {% endfor %}
+
+    </table>
+    <h3> Bills total is: </h3><h3 id="bill_total">{{bill_total}}</h3>
+    <br/>
+    <h3> Transactions</h3>
+    <a href="/Add_transaction"> ADD Purchase </a>
+    <br>
+    <h3>Your spending budget is: </h3><h3 id="spending_budget"></h3>
+   
+    <table class="table table-bordered">
+
+        <tr>
+            <th> Period ID </th>
+            <th> Amount </th>
+            <th> Date Purchased </th>
+            <th> Transaction ID </th>
+            <th> Percentage </th> 
+
+        </tr>
+        {% for transaction in transactions%}
+        <tr class= "transactions" id= "{{transaction.id}}">
+            <td> {{transaction.period_id}} </td>
+            <td class= "p1" id="{{transaction.id}}"> {{transaction.amount}} </td>
+            <td> {{transaction.date.date()}} </td>
+            <td > {{transaction.id}} </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+    <script>
+        
+
+        var billTotal = document.getElementById("bill_total").textContent;
+        billTotal = parseInt(billTotal);
+        var depositTotal = document.getElementById("deposit_total").textContent;
+        depositTotal = parseInt(depositTotal);
+
+        var spending_budget = ((depositTotal-billTotal)*45)/100;
+        var savings_goal = parseInt(((depositTotal-billTotal)*55)/100);
+       
+        var spending_total = 0
+        
+
+        //"${percentage_of}%"
+        function percent_of(number){
+            console.log(number.parentElement)
+            var percentage_of = parseInt((number.innerHTML*100)/spending_budget);
+            var row = number.parentElement;
+            var cell = row.insertCell();
+            cell.innerHTML = percentage_of+"%";
+            spending_total = spending_total+ parseInt(number.innerHTML);
+        }
+
+        var values = document.querySelectorAll('table tr td.p1');
+        console.log(values);
+        values.forEach(percent_of);
+        spending_total = spending_total/2
+
+        var remaining = parseInt(spending_budget - spending_total);
+        var percent_remaining = parseInt((remaining*100)/spending_budget);
+
+        var spending_bubble = document.getElementById("spending_budget");
+        spending_bubble.innerHTML = "$" + spending_budget +" you have spent " + spending_total +" you have $"+ remaining + " or " + percent_remaining
+        +  "% left of it so try to save: $" + savings_goal;
+        
+        
+        
+        
+
+        
+
+        let myChart = document.getElementById('myChart').getContext('2d');
+
+        // Global Options
+        Chart.defaults.global.defaultFontFamily = 'Lato';
+        Chart.defaults.global.defaultFontSize = 18;
+        Chart.defaults.global.defaultFontColor = '#777';
+
+        let massPopChart = new Chart(myChart, {
+        type:'doughnut', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+        data:{
+            labels:['Bills', 'Spending Money', 'Savings Goal'],
+            datasets:[{
+            label:'Money',
+            data:[
+                localStorage.getItem('bills_total'),
+                localStorage.getItem('spending_budget'),
+                localStorage.getItem('savings_goal')
+            ],
+            //backgroundColor:'green',
+            backgroundColor:[
+                "#66e6ff",
+                '#34ff30',
+                '#ffe366'
+                
+            ],
+            borderWidth:1,
+            borderColor:'#777',
+            hoverBorderWidth:3,
+            pointHoverBorderColor:'#000'
+            }]
+        },
+        options:{
+            /*title:{
+            display:true,
+            text:'This week Budget Plan',
+            fontSize:25,
+            },*/
+            legend:{
+            display:true,
+            position:'right',
+            labels:{
+                fontColor:'#000'
+            }
+            },
+            layout:{
+            padding:{
+                left:0,
+                right:0,
+                bottom:0,
+                top:0
+            }
+            },
+            tooltips:{
+            enabled:true
+            }
+        }
+        });
+        // making the cards
+        var deposit_card = document.getElementById("deposit_card");
+        deposit_card.textContent = "\$" + depositTotal + "    (Total)";
+        var bill_card = document.getElementById("bill_card");
+        bill_card.textContent = "\$" + billTotal + "    (Total)";
+        
+        
+        
+        //making progress-bar
+        var progressmaker = document.getElementById("bar");
+        if (percent_remaining > 25) {
+            progressmaker.style.backgroundColor = "#34ff30";
+          } 
+            else {
+                progressmaker.style.backgroundColor = "#ff6666";   
+          };
+        
+        progressmaker.style.width = percent_remaining + "%" ;
+        progressmaker.textContent = percent_remaining + "%";
+        var money_text = document.getElementById("money_remaining");
+        money_text.textContent = "\$" + remaining + "  left";
+
+
+        document.getElementById("modal_heading").innerHTML = "goo goo ga ga"
+        
+        function tester(){
+            document.getElementById("modal_heading").textContent = "thats all folks";
+        };
+
+        function makeModal(){
+        // price is blank % of your remaing budget
+        var purchase = document.getElementById('prepurchase').value;
+        var prepurchase_remaining = parseInt((purchase/remaining)*100);
+        // price is blank % of your total spending budget
+        var prepurchase_total_budget = parseInt((purchase/spending_budget)*100);
+        var sentence = "This purchase would be "+ prepurchase_remaining+"% of your remaining money and "+
+        prepurchase_total_budget+"% of your total spending budget";
+        var area = document.getElementById("modal_heading");
+        area.textContent = sentence;
+        };
+
+        function labor_exchange(){
+            var labor_rate = document.getElementById("labor_rate").value;
+            var purchase = document.getElementById('prepurchase').value;
+            var exchange_rate = parseFloat(purchase/labor_rate).toFixed(2);
+            var sentence2 = "The exchange rate for this purchase is equal to "+
+            exchange_rate + "hrs of your labor.";
+            var area2 = document.getElementById("exchange_bubble")
+            area2.textContent = sentence2;
+
+        }
+        
+
+        
+    </script>
+    
+
+</div>
+
+
+{% endblock %}

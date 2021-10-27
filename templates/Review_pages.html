@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block head %} {% endblock %}
+
+{% block body %}
+<a href="/">go back</a>
+<div class="content" style="text-align: center;">
+
+
+<h1 > Past weeks:</h1>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3> Select Budget ID </h3>
+            <form action="/review_pages" method="post">
+                <input type="text" name="Budget_ID" id="Budget_ID">
+                <br>
+                <input type="submit" value="Enter Budget ID">
+            </form>
+        </div>
+        <div class="col">
+            <h3> Troubleshoot </h3>
+            <button style="margin: 6px;"><a href="/adding_new_week">Start New Week okay</a></button>
+            <br>
+            <button style="margin: 6px;"><a href="/delete_budget_week">Pop Last Week </a></button>
+            
+            
+
+        </div>
+        
+    </div>
+</div>
+<br><br>
+<table class="table table-bordered" style="text-align: center;">
+    <tr>
+        <th>Budget ID</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+    </tr>
+    
+    {% for period in periods %}
+        <tr>
+            <td> {{ period.id }} </td>
+            <td> {{ period.start_date.date() }} </td>
+            <td> {{ period.end_date.date() }} </td>
+        </tr>
+    {% endfor %}
+    
+</table>
+</div>
+{% endblock %}

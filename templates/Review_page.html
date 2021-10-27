@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block head %} {% endblock %}
+
+{% block body %}
+<div class="content">
+<h1> Taj's Budget App</h1>
+<div class="content">
+<table>
+        <tr>
+            <th> Periods_ID </th>
+            <th> Added </th>
+            <th> Days Through</th>
+            <th> Action </th>
+
+        </tr>
+
+        {% for period in periods%}
+        <tr>
+            <td> {{period.id}} </td>
+            <td> {{period.start_date}} </td>
+            <td> {{period.end_date}} </td>
+            <td>
+                <a href=""> DELETE </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <br>
+    
+    <h3> Income </h3>
+    <a href="/Add_deposit"> ADD Deposit </a>
+    <table>
+
+        <tr>
+            <th> Period ID </th>
+            <th> Deposit ID </th>
+            <th> Date Added </th>
+            <th> Amount </th>
+
+        </tr>
+        {% for deposit in deposits%}
+        <tr>
+            <td> {{deposit.period_id}} </td>
+            <td> {{deposit.id}} </td>
+            <td> {{deposit.date.date()}} </td>
+            <td> {{deposit.amount}} </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h3> Income total is: </h3><h3 id="deposit_total">{{deposit_total}}</h3>
+
+    <br>
+    <h1> Bills </h1>
+    <a href="/Add_bill"> ADD BILL </a>
+    <table>
+
+        <tr>
+            <th> Period ID </th>
+            <th> Bill ID </th>
+            <th> Due Date </th>
+            <th> Amount </th>
+            <th> Bill Status </th>
+
+        </tr>
+        {% for bill in bills%}
+        <tr>
+            <td> {{bill.period_id}} </td>
+            <td> {{bill.id}} </td>
+            <td> {{bill.date.date()}} </td>
+            <div><td> {{bill.amount}} </td></div>
+            <td> {{bill.status}} </td>
+        </tr>
+                {% endfor %}
+
+    </table>
+    <h3> Bills total is: </h3><h3 id="bill_total">{{bill_total}}</h3>
+    <br/>
+    <h3> Transactions</h3>
+    <a href="/Add_transaction"> ADD Purchase </a>
+    <br>
+    <h3>Your spending budget was: </h3><h3 id="spending_budget"></h3>
+   
+    <table>
+
+        <tr>
+            <th> Period ID </th>
+            <th> Amount </th>
+            <th> Date Purchased </th>
+            <th> Transaction ID </th>
+            <th> Percentage </th> 
+
+        </tr>
+        {% for transaction in transactions%}
+        <tr class= "transactions" id= "{{transaction.id}}">
+            <td> {{transaction.period_id}} </td>
+            <td class= "p1" id="{{transaction.id}}"> {{transaction.amount}} </td>
+            <td> {{transaction.date.date()}} </td>
+            <td > {{transaction.id}} </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+    <script>
+        var billTotal = document.getElementById("bill_total").textContent;
+        billTotal = parseInt(billTotal);
+        var depositTotal = document.getElementById("deposit_total").textContent;
+        depositTotal = parseInt(depositTotal);
+
+        var spending_budget = ((depositTotal-billTotal)*45)/100;
+        var savings_goal = parseInt(((depositTotal-billTotal)*55)/100);
+       
+        var spending_total = 0
+        
+
+        //"${percentage_of}%"
+        function percent_of(number){
+            console.log(number.parentElement)
+            var percentage_of = parseInt((number.innerHTML*100)/spending_budget);
+            var row = number.parentElement;
+            var cell = row.insertCell();
+            cell.innerHTML = percentage_of+"%";
+            spending_total += parseInt(number.innerHTML);
+        }
+
+        var values = document.querySelectorAll('table tr td.p1');
+        console.log(values);
+        values.forEach(percent_of);
+
+        var remaining = parseInt(spending_budget - spending_total);
+        var percent_remaining = parseInt((remaining*100)/spending_budget);
+
+        var spending_bubble = document.getElementById("spending_budget");
+        spending_bubble.innerHTML = "$" + spending_budget + " you have "+ remaining + "/" + percent_remaining
+        +  "% left of it so try to save: $" + savings_goal;
+        
+       
+
+    </script>
+
+</div>
+</div>
+
+
+
+{% endblock %}

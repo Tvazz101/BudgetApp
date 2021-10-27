@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block head %} {% endblock %}
+
+{% block body %} 
+<div class="content" style="text-align: center;">
+    <h1>So <span id='price'></span> a lot! </h1>
+    <br>
+    <h2> With only </h2><h2 id="remaining"></h2><h2> remaining of your $</h2><h2 id="budget"></h2><h2> total budget:</h2>
+    <br>
+    <h3> It is </h3><h3 id="first_percent"></h3><h3> of your total Spending Budget</h3>
+    <br>
+    <h3> And it is </h3><h3 id="second_percent"></h3><h3> of your remaining money</h3>
+
+
+    <script>
+        var number = document.getElementById("price");
+        var first = document.getElementById("first_percent");
+        var two = document.getElementById("second_percent") ;
+        var price =localStorage.getItem('price');
+        
+        var spending_budget = localStorage.getItem('spending_budget');
+        var remaining = localStorage.getItem('remaining');
+        var remaining_amount = document.getElementById("remaining");
+        remaining_amount.textContent = remaining;
+        var budget_amount = document.getElementById("budget");
+        budget_amount.textContent = spending_budget;
+
+        var first_percent = parseInt((price*100)/spending_budget);
+        var second_percent = parseInt((price*100)/remaining);
+        number.textContent = price;
+        first.textContent = first_percent + "%" ;
+        two.textContent = second_percent + "%" ;
+    </script>
+</div>
+{% endblock %}
+</body>
+</html>
