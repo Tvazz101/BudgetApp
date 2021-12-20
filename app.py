@@ -3,7 +3,7 @@ from sqlalchemy.sql.functions import current_date
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 import datetime
-app = Flask('__name__')
+app = Flask('__name__',template_folder='/home/TajV/BudgetApp/templates/',static_folder='/home/TajV/BudgetApp/static/css')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data_9.db'
 db = SQLAlchemy(app)
 app.secret_key = "Savage"
@@ -76,7 +76,7 @@ def set_budget():
         session["period"] = budget_number
         return redirect('/')
 
-        
+
 
 
     else:
@@ -87,32 +87,32 @@ def set_budget():
 def learning():
     numby=+1
     return f"<h1>Hello World {numby}</h1>"
-        
+
 @app.route('/', methods=['POST', 'GET'])
 def home():
-    
+
     if request.method == 'POST':
-        
+
      return redirect('/Prepurchase')
-        
-    
+
+
 
 
     else:
-        
+
         current_date = datetime.datetime.today()
         cycle = Period.query.all()
         current_period = cycle[-1]
         start_time = current_period.start_date
         end_time = current_period.end_date
-        days_added = datetime.timedelta(days=14)
-        new_week = current_date + datetime.timedelta(days=14)
-        
-        
-        
+        days_added = datetime.timedelta(days=7)
+        new_week = current_date + datetime.timedelta(days=7)
+
+
+
         if start_time <= current_date <= end_time:
-          
-            
+
+
             number = current_period.id
             periods = Period.query.order_by(Period.id).all()
             bills = Bill.query.filter_by(period_id=number).order_by(Bill.id).all()
@@ -122,23 +122,24 @@ def home():
             transactions = Transaction.query.filter_by(period_id=number).order_by(Transaction.id).all()
             savings_total = db.session.query(db.func.sum(Investment.amount)).scalar()
             savings_deposits = Investment.query.filter_by(period_id=number).order_by(Investment.id).all()
+            days_left = (current_period.end_date - current_date).days
 
             start_text = current_period.start_date.strftime('%B %d, %Y')
             end_text = current_period.end_date.strftime('%B %d, %Y')
-        
-                
+
+
             return render_template('home_page.html', periods=periods, bills=bills,bill_total=bill_total,
                                             transactions=transactions, deposits=deposits,
                                              deposit_total=deposit_total, savings_total=savings_total,
                                              savings_deposits=savings_deposits, current_period=current_period,
-                                             start_text=start_text, end_text=end_text,)
-                    
+                                             start_text=start_text, end_text=end_text,days_left=days_left)
+
         else:
             new_period = Period(start_date=current_date, end_date=new_week)
             db.session.add(new_period)
             db.session.commit()
             return redirect("/")
-        
+
 
 @app.route('/Prepurchase', methods=['GET'])
 def Prepurchase():
@@ -238,15 +239,15 @@ def reviewList():
         session["period"] = budget_number
         return redirect('/reviewed_pages')
 
-    
+
     else:
         periods = Period.query.order_by(Period.id).all()
         return render_template('Review_pages.html', periods=periods)
 
 @app.route('/delete_budget_week')
 def delete_budget_week():
-    cycle = Period.query.all()
-    deleted_period = cycle[-1]
+    cycle2 = Period.query.all()
+    deleted_period = cycle2[-1]
     db.session.delete(deleted_period)
     db.session.commit()
     return redirect('/')
@@ -254,11 +255,34 @@ def delete_budget_week():
 @app.route('/adding_new_week')
 def adding_new_week():
     new_date = datetime.datetime.today()
-    new_week = new_date + datetime.timedelta(days=14)
+    new_week = new_date + datetime.timedelta(days=7)
     new_period = Period(start_date=new_date, end_date=new_week)
     db.session.add(new_period)
     db.session.commit()
     return redirect('/Add_bill')
+
+@app.route('/custom_week', methods=['GET', 'POST'])
+def adding_custom_week():
+    if request.method == 'POST':
+        new_days = request.form['custom_days']
+        new_date = datetime.datetime.today()
+        new_week = new_date + datetime.timedelta(days=7)
+        new_period = Period(start_date=new_date, end_date=new_week)
+        db.session.add(new_period)
+        db.session.commit()
+        return redirect('/')
+
+    else:
+        return render_template('Custom_week.html')
+
+@app.route('/delete_transaction/<int:tran>')
+def delete_transaction(tran):
+    transaction_to_delete = Transaction.query.filter_by(id=tran).first()
+    db.session.delete(transaction_to_delete)
+    db.session.commit()
+    return redirect('/')
+
+
 
 @app.route('/reviewed_pages', methods=['GET', 'POST'])
 def reviewdPage():
@@ -271,7 +295,7 @@ def reviewdPage():
     transactions = Transaction.query.filter_by(period_id=number).order_by(Transaction.id).all()
     savings_total = db.session.query(db.func.sum(Investment.amount)).scalar()
     savings_deposits = Investment.query.filter_by(period_id=number).order_by(Investment.id).all()
-        
+
     return render_template('home_page.html', periods=periods, bills=bills,bill_total=bill_total,
                                     transactions=transactions, deposits=deposits,
                                         deposit_total=deposit_total, savings_total=savings_total,

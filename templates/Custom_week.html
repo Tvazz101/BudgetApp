@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block head %} {% endblock %}
+
+{% block body %}
+<a href="/">go back</a>
+<div class="content" style="text-align: center; background-color:#ffe236;padding-top: 15%;
+padding-bottom: 100%; margin: 10%; margin-top: 5%;
+box-shadow: 0px 0px 63px gray;
+transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,
+.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);">
+    <h1> Custom Week Number of Days</h1>
+
+
+    <form action="/" method="post">
+        <label>Enter Number of Days</label>
+        <input type="integer" name="custom_days" id="custom_days">
+        <br>
+        <input type="submit" value="Create Custom Week" style="margin: 20px;">
+    </form>
+
+</div>
+{% endblock %}
+</body>
+</html>

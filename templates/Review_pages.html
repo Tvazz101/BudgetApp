@@ -23,11 +23,13 @@
             <button style="margin: 6px;"><a href="/adding_new_week">Start New Week okay</a></button>
             <br>
             <button style="margin: 6px;"><a href="/delete_budget_week">Pop Last Week </a></button>
-            
-            
+            <br>
+            <button style="margin: 6px;"><a href="/custom_week">Custom Week </a></button>
+
+
 
         </div>
-        
+
     </div>
 </div>
 <br><br>
@@ -37,7 +39,7 @@
         <th>Start Date</th>
         <th>End Date</th>
     </tr>
-    
+
     {% for period in periods %}
         <tr>
             <td> {{ period.id }} </td>
@@ -45,7 +47,7 @@
             <td> {{ period.end_date.date() }} </td>
         </tr>
     {% endfor %}
-    
+
 </table>
 </div>
 {% endblock %}
